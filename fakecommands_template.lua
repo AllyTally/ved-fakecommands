@@ -1,6 +1,6 @@
 -- Defaults:
 
-register_cmd("wait_for_action",function(args)
+register_cmd("wait_for_action",function(args) -- :wait_for_action
     return {
         "do(20)",
         "text(,,,)",
@@ -26,7 +26,7 @@ register_cmd("changeentitytile",function(args) -- :changeentitytile(entity,tile)
     return script
 end)
 
-register_cmd("changeentitycolour",function(args) -- :changeentitytile(entity,tile)
+register_cmd("changeentitycolour",function(args) -- :changeentitycolour(entity,tile)
 
     local script = {"backgroundtext", "text(gray,0,0," .. args[1] .. ")"}
     for i=1, tonumber(args[1]) do
@@ -38,7 +38,7 @@ register_cmd("changeentitycolour",function(args) -- :changeentitytile(entity,til
     return script
 end)
 
-register_cmd("fake_death",function(args)
+register_cmd("fake_death",function(args) -- :fake_death
     return {
         "changeplayercolour(red)",
         "squeak(cry)",
@@ -73,7 +73,7 @@ register_cmd("fake_death",function(args)
     }
 end)
 
-register_cmd("fake_respawn",function(args)
+register_cmd("fake_respawn",function(args) -- fake_respawn
     return {
         "changeplayercolour(cyan)",
         "changemood(player,0)",
