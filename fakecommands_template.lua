@@ -1,18 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- Defaults:
 
 register_cmd("wait_for_action",function(args)
