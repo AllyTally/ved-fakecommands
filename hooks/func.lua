@@ -9,8 +9,8 @@ end
 
 info = love.filesystem.getInfo("fakecommands.lua")
 if info == nil then
-    local contents, size = love.filesystem.read(fakecommands_path .. "fakecommands_template.lua")
-    local success, message = love.filesystem.write("fakecommands.lua", contents)
+    local success, message = love.filesystem.write("fakecommands.lua", "-- see fakecommands_defaults.lua in the plugin directory for examples.\n-- make sure to wrap your arguments in anythingbutnil0()!")
 end
 
+dofile(love.filesystem.getSaveDirectory() .. "/" .. fakecommands_path .. "fakecommands_defaults.lua")
 dofile(love.filesystem.getSaveDirectory() .. "/fakecommands.lua")

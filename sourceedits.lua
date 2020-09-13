@@ -38,6 +38,9 @@ sourceedits =
                 cons(line_commas)
                 local partss = explode(",", line_commas)
                 table.remove(partss,1)
+                if partss[#partss] == "" then
+                    table.remove(partss,#partss)
+                end
                 local temp = cmd_v["func"](partss)
                 scriptlines[k] = "# !MACRO! " .. #temp .. ", " .. scriptlines[k]
                 for lines_k, lines_v in pairs(temp) do
