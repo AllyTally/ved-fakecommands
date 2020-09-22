@@ -36,6 +36,16 @@ register_cmd("changeentitycolour",function(args) -- :changeentitycolour(entity,t
     return script
 end)
 
+register_cmd("target",function(args) -- :target(entity)
+    local script = {"backgroundtext", "text(gray,0,0," .. anythingbutnil0(args[1]) .. ")"}
+    for i=1, anythingbutnil0(args[1]) do
+        table.insert(script,"")
+    end
+    table.insert(script,"speak")
+    table.insert(script,"endtextfast")
+    return script
+end)
+
 register_cmd("fake_death",function(args) -- :fake_death
     return {
         "changeplayercolour(red)",
