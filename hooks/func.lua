@@ -1,8 +1,9 @@
 
-function register_cmd(name,func)
+function register_cmd(name,func,options)
     local cmd = {
         name = name,
-        func = func
+        func = func,
+        options = options
     }
     table.insert(fakecommands,cmd)
 end

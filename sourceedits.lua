@@ -4,9 +4,8 @@ sourceedits =
 	{
 		{
 			find = [[
-	-- Run when LEAVING the script
-	-- Converts flag labels to numbers, and if an internal script, convert to a format that works in VVVVVV
-	-- scriptlines assumed non-empty table of lines
+		table.insert(raw_script, "")
+	end
 
 	local usedflags = {}
 	local outofrangeflags = {}
@@ -15,9 +14,8 @@ sourceedits =
 	returnusedflags(usedflags, outofrangeflags)
 ]],
 			replace = [[
-	-- Run when LEAVING the script
-	-- Converts flag labels to numbers, and if an internal script, convert to a format that works in VVVVVV
-	-- scriptlines assumed non-empty table of lines
+		table.insert(raw_script, "")
+	end
 
 	local usedflags = {}
 	local outofrangeflags = {}
@@ -25,8 +23,7 @@ sourceedits =
 	-- See which flags have been used in this level.
 	returnusedflags(usedflags, outofrangeflags)
 
-    scriptlines[editingline] = anythingbutnil(input) .. anythingbutnil(input_r)
-	for k,v in pairs(scriptlines) do
+	for k,v in pairs(raw_script) do
 		local line = v
 
 		local line_no_spaces = line:gsub(" ", "")
@@ -42,16 +39,14 @@ sourceedits =
                     table.remove(partss,#partss)
                 end
                 local temp = cmd_v["func"](partss)
-                scriptlines[k] = "# !MACRO! " .. #temp .. ", " .. scriptlines[k]
+                raw_script[k] = "# !MACRO! " .. #temp .. ", " .. raw_script[k]
                 for lines_k, lines_v in pairs(temp) do
-                    table.insert(scriptlines,k+lines_k,lines_v)
+                    table.insert(raw_script,k+lines_k,lines_v)
                 end
                 break
             end
         end
 	end
-	editingline = 1
-	input, input_r = scriptlines[1], ""
 ]],
 			ignore_error = false,
 			luapattern = false,
@@ -70,21 +65,21 @@ sourceedits =
 		cutscenebarsinternalscript = false
 	end
 
-	for i = #scriptlines, 1, -1 do
-		local line = scriptlines[i]
+	for i = #readable_script, 1, -1 do
+		local line = readable_script[i]
 
         if line:match("^# !MACRO! ") then
             local rest = line:sub(11)
             local parts = explode(", ", rest)
             local lines = tonumber(parts[1])
             for i2 = lines, 1, -1 do
-                table.remove(scriptlines,i2 + i)
+                table.remove(readable_script,i2 + i)
             end
-            scriptlines[i] = parts[2]
+            readable_script[i] = parts[2]
         end
 	end
-    input = scriptlines[editingline]
-    input_r = ""
+    --input = scriptlines[editingline]
+    --input_r = ""
 ]],
 			ignore_error = false,
 			luapattern = false,
