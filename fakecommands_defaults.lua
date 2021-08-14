@@ -14,28 +14,6 @@ register_cmd("wait_for_action",function(args) -- :wait_for_action
     }
 end)
 
-register_cmd("changeentitytile",function(args) -- :changeentitytile(entity,tile)
-    local script = {"backgroundtext", "text(gray,0,0," .. anythingbutnil0(args[1]) .. ")"}
-    for i=1, anythingbutnil0(args[1]) do
-        table.insert(script,"")
-    end
-    table.insert(script,"speak")
-    table.insert(script,"endtextfast")
-    table.insert(script,"changetile(#," .. anythingbutnil0(args[2]) .. ")")
-    return script
-end)
-
-register_cmd("changeentitycolour",function(args) -- :changeentitycolour(entity,tile)
-    local script = {"backgroundtext", "text(gray,0,0," .. anythingbutnil0(args[1]) .. ")"}
-    for i=1, anythingbutnil0(args[1]) do
-        table.insert(script,"")
-    end
-    table.insert(script,"speak")
-    table.insert(script,"endtextfast")
-    table.insert(script,"changecolour(#," .. anythingbutnil0(args[2]) .. ")")
-    return script
-end)
-
 register_cmd("target",function(args) -- :target(entity)
     local script = {"backgroundtext", "text(gray,0,0," .. anythingbutnil0(args[1]) .. ")"}
     for i=1, anythingbutnil0(args[1]) do
@@ -81,7 +59,7 @@ register_cmd("fake_death",function(args) -- :fake_death
     }
 end)
 
-register_cmd("fake_respawn",function(args) -- fake_respawn
+register_cmd("fake_respawn",function(args) -- :fake_respawn
     return {
         "changeplayercolour(cyan)",
         "changemood(player,0)",
@@ -94,5 +72,21 @@ register_cmd("fake_respawn",function(args) -- fake_respawn
         "hideplayer()",
         "delay(1)",
         "showplayer()"
+   }
+end)
+
+register_cmd("freeze",function(args) -- :freeze
+    return {
+        "gamestate(1000)",
+        "delay(1)",
+        "endcutscene",
+        "gamestate(0)"
+   }
+end)
+
+
+register_cmd("unfreeze",function(args) -- :unfreeze
+    return {
+        "gamestate(1003)"
    }
 end)
