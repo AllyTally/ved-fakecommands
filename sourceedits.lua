@@ -11,7 +11,7 @@ sourceedits =
 	local outofrangeflags = {}
 
 	-- See which flags have been used in this level.
-	returnusedflags(usedflags, outofrangeflags)
+	return_used_flags(usedflags, outofrangeflags)
 ]],
 			replace = [[
 		table.insert(raw_script, "")
@@ -21,7 +21,7 @@ sourceedits =
 	local outofrangeflags = {}
 
 	-- See which flags have been used in this level.
-	returnusedflags(usedflags, outofrangeflags)
+	return_used_flags(usedflags, outofrangeflags)
 
 	for k,v in pairs(raw_script) do
 		local line = v
