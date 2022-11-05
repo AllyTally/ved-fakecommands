@@ -28,24 +28,24 @@ sourceedits =
 
 		local line_no_spaces = line:gsub(" ", "")
 		local line_no_case = scriptlinecasing(line_no_spaces)
-        
-        for cmd_k, cmd_v in pairs(fakecommands) do
-            if line_no_spaces:match("^:" .. cmd_v["name"] .. "[%(,%)]?") then
-            	local line_commas = string.gsub(string.gsub(line_no_case, "%(", ","), "%)", ","):gsub(" ", "")
-                cons(line_commas)
-                local partss = explode(",", line_commas)
-                table.remove(partss,1)
-                if partss[#partss] == "" then
-                    table.remove(partss,#partss)
-                end
-                local temp = cmd_v["func"](partss)
-                raw_script[k] = "# !MACRO! " .. #temp .. ", " .. raw_script[k]
-                for lines_k, lines_v in pairs(temp) do
-                    table.insert(raw_script,k+lines_k,lines_v)
-                end
-                break
-            end
-        end
+		
+		for cmd_k, cmd_v in pairs(fakecommands) do
+			if line_no_spaces:match("^:" .. cmd_v["name"] .. "[%(,%)]?") then
+				local line_commas = string.gsub(string.gsub(line_no_case, "%(", ","), "%)", ","):gsub(" ", "")
+				cons(line_commas)
+				local partss = explode(",", line_commas)
+				table.remove(partss,1)
+				if partss[#partss] == "" then
+					table.remove(partss,#partss)
+				end
+				local temp = cmd_v["func"](partss)
+				raw_script[k] = "# !MACRO! " .. #temp .. ", " .. raw_script[k]
+				for lines_k, lines_v in pairs(temp) do
+					table.insert(raw_script,k+lines_k,lines_v)
+				end
+				break
+			end
+		end
 	end
 ]],
 			ignore_error = false,
@@ -68,18 +68,18 @@ sourceedits =
 	for i = #readable_script, 1, -1 do
 		local line = readable_script[i]
 
-        if line:match("^# !MACRO! ") then
-            local rest = line:sub(11)
-            local parts = explode(", ", rest)
-            local lines = tonumber(parts[1])
-            for i2 = lines, 1, -1 do
-                table.remove(readable_script,i2 + i)
-            end
-            readable_script[i] = parts[2]
-        end
+		if line:match("^# !MACRO! ") then
+			local rest = line:sub(11)
+			local parts = explode(", ", rest)
+			local lines = tonumber(parts[1])
+			for i2 = lines, 1, -1 do
+				table.remove(readable_script,i2 + i)
+			end
+			readable_script[i] = parts[2]
+		end
 	end
-    --input = scriptlines[editingline]
-    --input_r = ""
+	--input = scriptlines[editingline]
+	--input_r = ""
 ]],
 			ignore_error = false,
 			luapattern = false,
@@ -113,7 +113,7 @@ sourceedits =
 					elseif editing_command then
 						setColorArr(s.syntaxcolor_command)
 ]],
-		    replace = [[
+			replace = [[
 					elseif utf8.sub(v_parsed,1,1)==":" and is_fakecommand then
 						setColorArr(s.syntaxcolor_fakecommand)
 					elseif editing_command then
@@ -152,7 +152,7 @@ sourceedits =
 		or (intsc and is_int) then
 			-- pass
 ]],
-		    replace = [[
+			replace = [[
 		if (not intsc and is_sim)
 		or (intsc and is_int)
 		or (utf8.sub(parts[1],1,1)==":" and is_fakecommand) then
@@ -191,7 +191,7 @@ sourceedits =
 ]],
 			replace = [[
 	color_setting(L.SYNTAXCOLOR_COMMENT,    10, s.syntaxcolor_comment    )
-	color_setting(L.SYNTAXCOLOR_FAKECOMMAND,11, s.syntaxcolor_fakecommand    )
+	color_setting(L.SYNTAXCOLOR_FAKECOMMAND,11, s.syntaxcolor_fakecommand	)
 
 	checkbox(s.colored_textboxes, 8, 8+(24*13), "colored_textboxes", L.COLORED_TEXTBOXES,
 ]],
@@ -201,99 +201,99 @@ sourceedits =
 		}
 	},
 	["lang/en"] = --ENGLISH
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Fake command",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
 		}
-    },
-    ["lang/eo"] = --ESPERANTO
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+	},
+	["lang/eo"] = --ESPERANTO
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Falsa komando",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
 		}
-    },
-    ["lang/fr"] = --FRENCH
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+	},
+	["lang/fr"] = --FRENCH
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Fausse commande",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
 		}
-    },
-    ["lang/es_AR"] = --SPANISH
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+	},
+	["lang/es_AR"] = --SPANISH
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Comando falso",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
 		}
-    },
-    ["lang/nl"] = --DUTCH
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+	},
+	["lang/nl"] = --DUTCH
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Nep commando",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
 		}
-    },
-    ["lang/de"] = --GERMAN
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+	},
+	["lang/de"] = --GERMAN
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Gefälschter Befehl",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
-        }
-    },
-    ["lang/ru"] = --RUSSIAN
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+		}
+	},
+	["lang/ru"] = --RUSSIAN
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Поддельная команда",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
-        }
-    },
-    ["lang/id"] = --INDONESIAN
-    {
-        {
-            find = [[L = {]],
-            replace = [[L = {
+		}
+	},
+	["lang/id"] = --INDONESIAN
+	{
+		{
+			find = [[L = {]],
+			replace = [[L = {
 SYNTAXCOLOR_FAKECOMMAND = "Memerintah palsu",
 ]],
 			ignore_error = false,
 			luapattern = false,
 			allowmultiple = false,
-        }
-    }
+		}
+	}
 }
