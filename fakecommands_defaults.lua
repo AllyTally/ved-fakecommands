@@ -1,5 +1,16 @@
 -- Defaults:
 
+
+register_cmd("settile", function(args) -- :settile(x,y,tile)
+    return {
+        "everybodysad",
+        "createentity(" .. anythingbutnil0(args[1]) .. "," .. anythingbutnil0(args[2]) .. ",4)",
+        "flipgravity(#)",
+        "changetile(#," .. anythingbutnil0(args[3]) .. ")",
+        "changemood(player,0)"
+    }
+end)
+
 register_cmd("wait_for_action",function(args) -- :wait_for_action
     return {
         "do(20)",
@@ -26,7 +37,7 @@ end)
 
 register_cmd("fake_death",function(args) -- :fake_death
     return {
-        "changeplayercolour(red)",
+        "changeplayercolour(1)",
         "squeak(cry)",
         "changemood(player,1)",
         "hideplayer()",
