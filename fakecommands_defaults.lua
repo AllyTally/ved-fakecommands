@@ -11,6 +11,19 @@ register_cmd("settile", function(args) -- :settile(x,y,tile)
     }
 end)
 
+register_cmd("setbgtile", function(args) -- :setbgtile(x,y,tile)
+    return {
+        "everybodysad",
+        "createentity(" .. anythingbutnil0(args[1]) .. "," .. anythingbutnil0(args[2]) .. ",4)",
+        "flipgravity(#)",
+        "changetile(#," .. anythingbutnil0(args[3]) .. ")",
+        "everybodysad",
+        "createentity(" .. anythingbutnil0(args[1]) .. "," .. anythingbutnil0(args[2]) .. ",2,4,336)",
+        "changetile(#,-24)",
+        "changemood(player,0)"
+    }
+end)
+
 register_cmd("wait_for_action",function(args) -- :wait_for_action
     return {
         "do(20)",
