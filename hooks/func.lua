@@ -3,7 +3,9 @@ function register_cmd(name,func,options)
     local cmd = {
         name = name,
         func = func,
-        options = options
+        options = options or {
+            consumetext = 0
+        }
     }
     table.insert(fakecommands,cmd)
 end

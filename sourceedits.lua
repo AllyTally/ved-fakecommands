@@ -32,13 +32,24 @@ sourceedits =
 		for cmd_k, cmd_v in pairs(fakecommands) do
 			if line_no_spaces:match("^:" .. cmd_v["name"] .. "[%(,%)]?") then
 				local line_commas = string.gsub(string.gsub(line_no_case, "%(", ","), "%)", ","):gsub(" ", "")
-				cons(line_commas)
 				local partss = explode(",", line_commas)
 				table.remove(partss,1)
 				if partss[#partss] == "" then
 					table.remove(partss,#partss)
 				end
-				local temp = cmd_v["func"](partss)
+				local consumelines = cmd_v["options"]["consumetext"] or 0
+				if type(consumelines) == "function" then
+					consumelines = consumelines(partss)
+				end
+
+				local consumedlines = {}
+
+				for i = 1, consumelines do
+					table.insert(consumedlines, raw_script[k+i])
+					raw_script[k+i] = "# !TEXT! " .. raw_script[k+i]
+				end
+
+				local temp = cmd_v["func"](partss, consumedlines)
 				raw_script[k] = "# !MACRO! " .. #temp .. ", " .. raw_script[k]
 				for lines_k, lines_v in pairs(temp) do
 					table.insert(raw_script,k+lines_k,lines_v)
@@ -76,6 +87,9 @@ sourceedits =
 				table.remove(readable_script,i2 + i)
 			end
 			readable_script[i] = parts[2]
+		end
+		if line:match("^# !TEXT! ") then
+			readable_script[i] = line:sub(10)
 		end
 	end
 	--input = scriptlines[editingline]
