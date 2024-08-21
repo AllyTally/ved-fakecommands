@@ -114,3 +114,39 @@ register_cmd("unfreeze",function(args) -- :unfreeze
         "gamestate(1003)"
    }
 end)
+
+register_cmd("say",function(args,consumed)
+    -- consumed is the lines of text
+    local scr = {}
+    table.insert(scr,"squeak(" .. (args[2] or "terminal") .. ")")
+    table.insert(scr,"text(" .. (args[2] or "gray") .. ",0,0," .. #consumed .. ")")
+    for i = 1, #consumed do
+        table.insert(scr,consumed[i])
+    end
+    table.insert(scr,((args[3] == "custom") and "custom" or "") .. "position(" .. (args[2] and (args[2] .. ",above)") or "center)"))
+    table.insert(scr,"speak_active")
+    table.insert(scr,"endtext")
+    return scr
+end, {
+    consumetext = function(args)
+        return math.max(anythingbutnil0(args[1]),1)
+    end
+})
+
+register_cmd("reply",function(args,consumed)
+    -- consumed is the lines of text
+    local scr = {}
+    table.insert(scr,"squeak(cyan)")
+    table.insert(scr,"text(player,0,0," .. #consumed .. ")")
+    for i = 1, #consumed do
+        table.insert(scr,consumed[i])
+    end
+    table.insert(scr,"position(player,above)")
+    table.insert(scr,"speak_active")
+    table.insert(scr,"endtext")
+    return scr
+end, {
+    consumetext = function(args)
+        return math.max(anythingbutnil0(args[1]),1)
+    end
+})
