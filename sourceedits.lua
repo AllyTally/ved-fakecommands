@@ -65,6 +65,44 @@ sourceedits =
 		},
 		{
 			find = [[
+		elseif partss_parsed[1] == "setroomname" then
+			return 1, "white"
+		end
+	end
+end
+]],
+			replace = [[
+		elseif partss_parsed[1] == "setroomname" then
+			return 1, "white"
+		elseif utf8.sub(partss_parsed[1],1,1)==":" then
+			for cmd_k, cmd_v in pairs(fakecommands) do
+				if partss_parsed[1] == ":"..cmd_v["name"] then
+					local consumelines = cmd_v["options"]["consumetext"] or 0
+					local parts2 = {}
+					for i, part in ipairs(partss_parsed) do
+					    if ((i > 1) and (part ~= "")) then
+					        table.insert(parts2,part)
+					    end
+					end
+					if type(consumelines) == "function" then
+						consumelines = consumelines(parts2)
+					end
+					if consumelines > 0 then
+						return consumelines, "white"
+					end
+					break
+				end
+			end
+		end
+	end
+end
+]],
+			ignore_error = false,
+			luapattern = false,
+			allowmultiple = false,
+		},
+		{
+			find = [[
 	else
 		internalscript = false
 		cutscenebarsinternalscript = false
