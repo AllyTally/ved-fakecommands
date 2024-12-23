@@ -1,10 +1,16 @@
 # ved-fakecommands
 fake commands for ved
 
-run ved with the plugin once to create "fakecommands.lua" in your ved folder in appdata
-edit the file to add fake commands. there's a few default commands in there
+Run ved with the plugin once to create `fakecommands.lua` in your ved folder in appdata
 
-example
+edit the file to add fake commands
+
+## NEW - PER LEVEL FAKECOMMANDS
+
+Since 1.2.4, you can now place a `fakecommands.lua` file in your level assets folder.
+
+## Fake command example
+
 ```lua
 register_cmd("flash",function(args)
     return {
@@ -14,4 +20,5 @@ register_cmd("flash",function(args)
     }
 end)
 ```
-then youd write `:flash()` in your script
+
+Usage is just writing `:flash()` in your script.
