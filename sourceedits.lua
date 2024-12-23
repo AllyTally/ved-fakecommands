@@ -1,5 +1,18 @@
 sourceedits =
 {
+	["func"] =
+	{
+		{
+			find = [[function load_vvvvvv_tilesets(levelassetsfolder)]],
+			replace = [[
+function load_vvvvvv_tilesets(levelassetsfolder)
+	FAKECOMMANDS_load(levelassetsfolder)
+]],
+			ignore_error = false,
+			luapattern = false,
+			allowmultiple = false,
+		}
+	},
 	["scriptfunc"] =
 	{
 		{
