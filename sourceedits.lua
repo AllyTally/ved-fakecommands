@@ -41,33 +41,44 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 
 		local line_no_spaces = line:gsub(" ", "")
 		local line_no_case = scriptlinecasing(line_no_spaces)
-		
-		for cmd_k, cmd_v in pairs(fakecommands) do
-			if line_no_spaces:match("^:" .. cmd_v["name"] .. "[%(,%)]?") then
-				local line_commas = string.gsub(string.gsub(line_no_case, "%(", ","), "%)", ","):gsub(" ", "")
-				local partss = explode(",", line_commas)
-				table.remove(partss,1)
-				if partss[#partss] == "" then
-					table.remove(partss,#partss)
-				end
-				local consumelines = cmd_v["options"]["consumetext"] or 0
-				if type(consumelines) == "function" then
-					consumelines = consumelines(partss)
-				end
 
-				local consumedlines = {}
+		if (utf8.sub(line_no_case, 1, 1) == ":") then
+			-- Okay, our line starts with ":", so it's PROBABLY a fakecommand.
+			-- TODO: make sure this can't activate inside of a textbox...
 
-				for i = 1, consumelines do
-					table.insert(consumedlines, raw_script[k+i])
-					raw_script[k+i] = "# !TEXT! " .. raw_script[k+i]
-				end
+			local line_commas = string.gsub(string.gsub(utf8.sub(line_no_case, 2), "%(", ","), "%)", ","):gsub(" ", "")
+			local args = explode(",", line_commas)
+			local command = table.remove(args,1)
 
-				local temp = cmd_v["func"](partss, consumedlines)
-				raw_script[k] = "# !MACRO! " .. #temp .. ", " .. raw_script[k]
-				for lines_k, lines_v in pairs(temp) do
-					table.insert(raw_script,k+lines_k,lines_v)
+			-- If the last argument is empty, remove it (technically not how VVVVVV parses commands, but it's nicer for Lua scripts)
+			if args[#args] == "" then
+				table.remove(args,#args)
+			end
+
+			-- We got ahead of ourselves a little bit... let's make sure this is ACTUALLY a fakecommand.
+
+			for _,cmd_v in ipairs(fakecommands) do
+				if (command == cmd_v["name"]) then
+					local consumelines = cmd_v["options"]["consumetext"] or 0
+					if type(consumelines) == "function" then
+						consumelines = consumelines(args)
+					end
+
+					local consumedlines = {}
+
+					for i = 1, consumelines do
+						table.insert(consumedlines, raw_script[k+i])
+						raw_script[k+i] = "# !TEXT! " .. raw_script[k+i]
+					end
+
+					local temp = cmd_v["func"](args, consumedlines)
+					raw_script[k] = "# !MACRO! " .. #temp .. ", " .. raw_script[k]
+					for lines_k, lines_v in pairs(temp) do
+						table.insert(raw_script,k+lines_k,lines_v)
+					end
+					-- Well, it was a fakecommand, so we don't need to keep searching.
+					break
 				end
-				break
 			end
 		end
 	end
@@ -88,7 +99,7 @@ end
 		elseif partss_parsed[1] == "setroomname" then
 			return 1, "white"
 		elseif utf8.sub(partss_parsed[1],1,1)==":" then
-			for cmd_k, cmd_v in pairs(fakecommands) do
+			for _,cmd_v in ipairs(fakecommands) do
 				if partss_parsed[1] == ":"..cmd_v["name"] then
 					local consumelines = cmd_v["options"]["consumetext"] or 0
 					local parts2 = {}
@@ -132,12 +143,12 @@ end
 
 		if line:match("^# !MACRO! ") then
 			local rest = line:sub(11)
-			local parts = explode(", ", rest)
-			local lines = tonumber(parts[1])
+			local lines, command = rest:match("^(%d+), (.+)$")
+			lines = tonumber(lines)
 			for i2 = lines, 1, -1 do
-				table.remove(readable_script,i2 + i)
+				table.remove(readable_script, i2 + i)
 			end
-			readable_script[i] = parts[2]
+			readable_script[i] = command
 		end
 		if line:match("^# !TEXT! ") then
 			readable_script[i] = line:sub(10)

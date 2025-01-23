@@ -111,7 +111,10 @@ end)
 
 register_cmd("unfreeze",function(args) -- :unfreeze
     return {
-        "gamestate(1003)"
+        "gamestate(1003)",
+		"delay(1)",
+		"stopmusic()",
+		"resumemusic()"
    }
 end)
 
@@ -123,7 +126,24 @@ register_cmd("say",function(args,consumed)
     for i = 1, #consumed do
         table.insert(scr,consumed[i])
     end
-    table.insert(scr,((args[3] == "custom") and "custom" or "") .. "position(" .. (args[2] and (args[2] .. ",above)") or "center)"))
+
+	if (args[3] == "center") then
+		table.insert(scr, "position(center)")
+	elseif (args[3] == "custom") then
+		table.insert(scr, "customposition(" .. args[2] .. ",above)")
+	elseif (args[3] == "below") then
+		table.insert(scr, "position(" .. args[2] .. ",below)")
+	elseif (args[3] == "belowcustom") then
+		table.insert(scr, "customposition(" .. args[2] .. ",below)")
+	else -- assume args[3] is nil, and change things accordingly
+		if (args[2] == nil) or (args[2] == "terminal") then
+			-- can't check for gray in case someone makes a gray crewemate, i guess...
+			table.insert(scr, "position(center)")
+		else
+			table.insert(scr, "position(" .. args[2] .. ",above)")
+		end
+	end
+
     table.insert(scr,"speak_active")
     table.insert(scr,"endtext")
     return scr
@@ -141,7 +161,15 @@ register_cmd("reply",function(args,consumed)
     for i = 1, #consumed do
         table.insert(scr,consumed[i])
     end
-    table.insert(scr,"position(player,above)")
+
+	if args[2] == nil then
+		table.insert(scr,"position(player,above)")
+	elseif args[2] == "below" then
+		table.insert(scr,"position(player,below)")
+	elseif args[2] == "center" then
+		table.insert(scr,"position(center)")
+	end
+
     table.insert(scr,"speak_active")
     table.insert(scr,"endtext")
     return scr
