@@ -36,6 +36,8 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 	-- See which flags have been used in this level.
 	return_used_flags(usedflags, outofrangeflags)
 
+	FAKECOMMANDS_event("preparse", raw_script)
+
 	for k,v in pairs(raw_script) do
 		local line = v
 
@@ -57,7 +59,7 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 
 			-- We got ahead of ourselves a little bit... let's make sure this is ACTUALLY a fakecommand.
 
-			for _,cmd_v in ipairs(fakecommands) do
+			for _,cmd_v in ipairs(FAKECOMMANDS) do
 				if (command == cmd_v["name"]) then
 					local consumelines = cmd_v["options"]["consumetext"] or 0
 					if type(consumelines) == "function" then
@@ -82,6 +84,8 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 			end
 		end
 	end
+
+	FAKECOMMANDS_event("postparse", raw_script)
 ]],
 			ignore_error = false,
 			luapattern = false,
@@ -99,9 +103,10 @@ end
 		elseif partss_parsed[1] == "setroomname" then
 			return 1, "white"
 		elseif utf8.sub(partss_parsed[1],1,1)==":" then
-			for _,cmd_v in ipairs(fakecommands) do
+			for _,cmd_v in ipairs(FAKECOMMANDS) do
 				if partss_parsed[1] == ":"..cmd_v["name"] then
 					local consumelines = cmd_v["options"]["consumetext"] or 0
+					local color = cmd_v["options"]["color"] or "white"
 					local parts2 = {}
 					for i, part in ipairs(partss_parsed) do
 					    if ((i > 1) and (part ~= "")) then
@@ -111,8 +116,11 @@ end
 					if type(consumelines) == "function" then
 						consumelines = consumelines(parts2)
 					end
+					if type(color) == "function" then
+						color = color(parts2)
+					end
 					if consumelines > 0 then
-						return consumelines, "white"
+						return consumelines, color
 					end
 					break
 				end
@@ -174,7 +182,7 @@ end
 
 					local fc_k, fc_v
 					local is_fakecommand = false
-					for fc_k, fc_v in ipairs(fakecommands) do
+					for fc_k, fc_v in ipairs(FAKECOMMANDS) do
 						if fc_v.name == utf8.sub(v_parsed,2,utf8.len(v_parsed)) then
 							is_fakecommand = true
 						end
@@ -212,7 +220,7 @@ end
 
 		local fc_k, fc_v
 		local is_fakecommand = false
-		for fc_k, fc_v in ipairs(fakecommands) do
+		for fc_k, fc_v in ipairs(FAKECOMMANDS) do
 			if fc_v.name == utf8.sub(parts[1],2,utf8.len(parts[1])) then
 				is_fakecommand = true
 			end

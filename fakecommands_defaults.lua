@@ -118,10 +118,31 @@ register_cmd("unfreeze",function(args) -- :unfreeze
    }
 end)
 
+register_event("preparse", function()
+    squeak_enabled = true
+end)
+
+register_cmd("squeak",function(args) -- :squeak(color)
+    if args[1] == "on" then
+        squeak_enabled = true
+    elseif args[1] == "off" then
+        squeak_enabled = false
+    end
+
+    if not squeak_enabled then
+        return {}
+    end
+    return {
+        "squeak(" .. (args[1] or "terminal") .. ")"
+    }
+end)
+
 register_cmd("say",function(args,consumed)
     -- consumed is the lines of text
     local scr = {}
-    table.insert(scr,"squeak(" .. (args[2] or "terminal") .. ")")
+    if squeak_enabled then
+        table.insert(scr,"squeak(" .. (args[2] or "terminal") .. ")")
+    end
     table.insert(scr,"text(" .. (args[2] or "gray") .. ",0,0," .. #consumed .. ")")
     for i = 1, #consumed do
         table.insert(scr,consumed[i])
@@ -150,13 +171,18 @@ register_cmd("say",function(args,consumed)
 end, {
     consumetext = function(args)
         return math.max(anythingbutnil0(args[1]),1)
+    end,
+    color = function(args)
+        return args[2] or "gray"
     end
 })
 
 register_cmd("reply",function(args,consumed)
     -- consumed is the lines of text
     local scr = {}
-    table.insert(scr,"squeak(cyan)")
+    if squeak_enabled then
+        table.insert(scr,"squeak(cyan)")
+    end
     table.insert(scr,"text(player,0,0," .. #consumed .. ")")
     for i = 1, #consumed do
         table.insert(scr,consumed[i])
@@ -176,5 +202,6 @@ register_cmd("reply",function(args,consumed)
 end, {
     consumetext = function(args)
         return math.max(anythingbutnil0(args[1]),1)
-    end
+    end,
+    color = "player"
 })

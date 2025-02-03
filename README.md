@@ -6,6 +6,23 @@ Run ved with the plugin once to create `fakecommands.lua` in your ved folder in 
 
 edit the file to add fake commands
 
+## NEW - FAKECOMMAND EVENTS
+
+Since 1.2.6, there are now "events". They are executed when certain sections of code are reached.
+
+The events you can use are:
+
+- `preparse` - Happens before the script is parsed for fakecommands.
+- `postparse` - Happens after the script is parsed for fakecommands.
+
+### Event example
+
+```lua
+register_event("preparse",function()
+    print("This is printed before the script is parsed.")
+end)
+```
+
 ## NEW - PER LEVEL FAKECOMMANDS
 
 Since 1.2.4, you can now place a `fakecommands.lua` file in your level assets folder.
@@ -23,6 +40,49 @@ end)
 ```
 
 Usage is just writing `:flash()` in your script. This is a "recreation" of the simplified scripting `flash` command.
+
+## Options example
+
+Fakecommands can also have various options, passed as a third argument. Currently, there are `consumetext` and `color`.
+
+```lua
+register_cmd("setroomname",function(args,consumed)
+    -- consumed is the lines of text. Let's only capture the first line.
+    return {
+        "setroomname",
+        consumed[1] or ""
+    }
+end, {
+    consumetext = 1,
+    color = "white"
+})
+```
+
+Both `consumetext` and `color` get arguments from the fakecommand itself. If you want to have a variable amount of consumed text, you can do something along the lines of:
+
+```lua
+register_cmd("reply",function(args,consumed)
+    -- consumed is the lines of text
+    local scr = {}
+    table.insert(scr,"squeak(cyan)")
+    table.insert(scr,"text(player,0,0," .. #consumed .. ")")
+    for i = 1, #consumed do
+        table.insert(scr,consumed[i])
+    end
+    table.insert(scr,"position(center)")
+    table.insert(scr,"speak_active")
+    table.insert(scr,"endtext")
+    return scr
+end, {
+    consumetext = function(args)
+        return math.max(anythingbutnil0(args[1]),1)
+    end,
+    color = "player"
+})
+```
+
+> [!NOTE]
+> This is a very cut down version of the `:reply` fakecommand. Check `fakecommands_defaults.lua` for the real version if required.
 
 ## Defaults
 
@@ -78,6 +138,10 @@ Undo the effects of `:freeze`.
 > [!WARNING]
 > Due to how this command works (it runs `gamestate(1003)`, which unfreezes the game and also fades the music in), there is a built-in 1-frame delay. Additionally, the music may be quiet for a single frame before going back to full volume.
 > If you are fine with the music fading in, instead call `gamestate(1003)`.
+
+### `:squeak([args])`
+
+If `args` is `off`, further squeaks (including `:say` and `:reply`) will not play. If `args` is `on`, they will start playing again. If `args` is a color, it'll play that color's squeak.
 
 ### `:say([lines, [speaker, [position]]])`
 

@@ -7,11 +7,28 @@ function register_cmd(name,func,options)
             consumetext = 0
         }
     }
-    table.insert(fakecommands,cmd)
+    table.insert(FAKECOMMANDS,cmd)
+end
+
+function register_event(event,func)
+    if FAKECOMMANDS_EVENTS[event] == nil then
+        FAKECOMMANDS_EVENTS[event] = {}
+    end
+    table.insert(FAKECOMMANDS_EVENTS[event],func)
+end
+
+function FAKECOMMANDS_event(event_name, ...)
+    if FAKECOMMANDS_EVENTS[event_name] == nil then
+        return
+    end
+    for _,func in ipairs(FAKECOMMANDS_EVENTS[event_name]) do
+        func(...)
+    end
 end
 
 function FAKECOMMANDS_load(levelassetsfolder)
-    fakecommands = {}
+    FAKECOMMANDS = {}
+    FAKECOMMANDS_EVENTS = {}
 
     if not love.filesystem.exists("fakecommands.lua") then
         local success, message = love.filesystem.write("fakecommands.lua", "-- See fakecommands_defaults.lua in the plugin directory for examples.\n-- Make sure to check arguments for nil!\n-- Per-level fakecommands can also be made now, create fakecommands.lua in your level's assets folder")
