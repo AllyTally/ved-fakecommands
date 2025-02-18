@@ -1,5 +1,12 @@
 
 function register_cmd(name,func,options)
+
+	for i = #FAKECOMMANDS, 1, -1 do
+		if FAKECOMMANDS[i]["name"] == name then
+			table.remove(FAKECOMMANDS, i)
+		end
+	end
+
     local cmd = {
         name = name,
         func = func,
@@ -41,6 +48,9 @@ function FAKECOMMANDS_load(levelassetsfolder)
 		local success, result = pcall(dofile, levelassetsfolder .. "/fakecommands.lua")
 		if success then
 			cons("Loaded level-specific fakecommands")
+		else
+			cons("Error loading level-specific fakecommands")
+			cons(result)
 		end
 	end
 end
