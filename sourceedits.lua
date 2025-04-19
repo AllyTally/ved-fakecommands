@@ -61,21 +61,43 @@ function load_vvvvvv_tilesets(levelassetsfolder)
 
 			for _,cmd_v in ipairs(FAKECOMMANDS) do
 				if (command == cmd_v["name"]) then
+
+					-- Ok, copy the current script.
+					local old_raw_script = {}
+					for i, v in ipairs(raw_script) do
+						old_raw_script[i] = v
+					end
+
 					local consumelines = cmd_v["options"]["consumetext"] or 0
 					if type(consumelines) == "function" then
-						consumelines = consumelines(args)
+						local success, result = pcall(consumelines, args)
+						if not success then
+							-- Abort!! We got an error!
+							raw_script = old_raw_script
+							raw_script[k] = "# !ERROR! " .. raw_script[k]
+							FAKECOMMANDS_error(command, "consumetext", line, result)
+							break
+						end
+						consumelines = result
 					end
 
 					local consumedlines = {}
 
 					for i = 1, consumelines do
-						table.insert(consumedlines, raw_script[k+i])
-						raw_script[k+i] = "# !TEXT! " .. raw_script[k+i]
+						table.insert(consumedlines, raw_script[k+i] or "")
+						raw_script[k+i] = "# !TEXT! " .. (raw_script[k+i] or "")
 					end
 
-					local temp = cmd_v["func"](args, consumedlines)
-					raw_script[k] = "# !MACRO! " .. #temp .. ", " .. raw_script[k]
-					for lines_k, lines_v in pairs(temp) do
+					local success, result = pcall(cmd_v["func"], args, consumedlines)
+					if not success then
+						-- Abort!! We got an error!
+						raw_script = old_raw_script
+						raw_script[k] = "# !ERROR! " .. raw_script[k]
+						FAKECOMMANDS_error(command, "command", line, result)
+						break
+					end
+					raw_script[k] = "# !MACRO! " .. #result .. ", " .. raw_script[k]
+					for lines_k, lines_v in pairs(result) do
 						table.insert(raw_script,k+lines_k,lines_v)
 					end
 					-- Well, it was a fakecommand, so we don't need to keep searching.
@@ -114,10 +136,22 @@ end
 					    end
 					end
 					if type(consumelines) == "function" then
-						consumelines = consumelines(parts2)
+						local success, result = pcall(consumelines, parts2)
+						if not success then
+							-- Error... but this is rendering? So I guess just pretend like no text gets consumed for now.
+							consumelines = 0
+						else
+							consumelines = result
+						end
 					end
 					if type(color) == "function" then
-						color = color(parts2)
+						local success, result = pcall(color, parts2)
+						if not success then
+							-- Error... but this is rendering? So pretend it's white I guess?
+							color = "white"
+						else
+							color = result
+						end
 					end
 					if consumelines > 0 then
 						return consumelines, color
@@ -157,6 +191,9 @@ end
 				table.remove(readable_script, i2 + i)
 			end
 			readable_script[i] = command
+		end
+		if line:match("^# !ERROR! ") then
+			readable_script[i] = line:sub(11)
 		end
 		if line:match("^# !TEXT! ") then
 			readable_script[i] = line:sub(10)

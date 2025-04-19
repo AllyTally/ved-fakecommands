@@ -29,8 +29,49 @@ function FAKECOMMANDS_event(event_name, ...)
         return
     end
     for _,func in ipairs(FAKECOMMANDS_EVENTS[event_name]) do
-        func(...)
+        local success, result = pcall(func, ...)
+        if not success then
+            FAKECOMMANDS_error(event_name, "event", nil, result)
+        end
     end
+end
+
+function FAKECOMMANDS_error(command, where, line, error_msg)
+    local str = ""
+
+    local event = false
+
+    if where == "event" then
+        event = true
+        str = "Error in FAKECOMMAND EVENT \"" .. command .. "\""
+    elseif where == "command" then
+        str = "Error in FAKECOMMAND \"" .. command .. "\""
+    else
+        str = "Error in FAKECOMMAND \"" .. command .. "\"'s \"" .. where .. "\" function"
+    end
+
+    -- Seems like Ved's dialog boxes don't wrap text, so let's just... trim the error? I guess?
+    local trimmed_error = ""
+    local colon_pos = string.find(error_msg, ".lua:")
+    if colon_pos ~= nil then
+        trimmed_error = "Line " .. string.sub(error_msg, colon_pos + 5)
+    else
+        trimmed_error = error_msg
+    end
+
+    if event then
+        str = str .. ":\n\n" .. trimmed_error .. "\n\nEvent: " .. command
+    else
+        str = str .. ":\n\n" .. trimmed_error .. "\n\nCommand: " .. line .. "\n\nThe affected lines have been ignored."
+    end
+
+    dialog.create(str, DBS.OK)
+    cons(str)
+end
+
+function FAKECOMMANDS_load_safe(path)
+    local success, result = pcall(dofile, path)
+    return success, result
 end
 
 function FAKECOMMANDS_load(levelassetsfolder)
@@ -42,10 +83,17 @@ function FAKECOMMANDS_load(levelassetsfolder)
     end
 
     dofile(love.filesystem.getSaveDirectory() .. "/" .. fakecommands_path .. "fakecommands_defaults.lua")
-    dofile(love.filesystem.getSaveDirectory() .. "/fakecommands.lua")
+
+    local success, result = FAKECOMMANDS_load_safe(love.filesystem.getSaveDirectory() .. "/fakecommands.lua")
+    if success then
+        cons("Loaded user fakecommands")
+    else
+        cons("Error loading user fakecommands")
+        cons(result)
+    end
 
 	if levelassetsfolder ~= nil then
-		local success, result = pcall(dofile, levelassetsfolder .. "/fakecommands.lua")
+		local success, result = FAKECOMMANDS_load_safe(levelassetsfolder .. "/fakecommands.lua")
 		if success then
 			cons("Loaded level-specific fakecommands")
 		else
